@@ -1,6 +1,11 @@
 # docker-elassandra-builder
 Containerized build environment for Elassandra
 
+Available on [docker hub](https://hub.docker.com/r/strapdata/elassandra-builder/):
+```bash
+docker pull strapdata/elassandra-builder
+```
+
 Usage
 -----
 **Warning**: this works with an internal version of elassandra that is not yet published.
