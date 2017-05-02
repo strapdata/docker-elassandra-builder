@@ -29,6 +29,12 @@ package() {
 
   show_and_exec $MAVEN_CMD
 
+  # fix the rpm filename
+  for rpm_file in distribution/rpm/target/releases/*.rpm; do
+    new_rpm_file=$(echo $rpm_file | sed s/elasticsearch/elassandra/)
+    show_and_exec cp "$rpm_file" "$new_rpm_file"
+  done
+
   if [ "$FIX_OWNERSHIP" = "true" ]; then
 
     if [ -n "$FIXED_OWNER" ] && [ -n "$FIXED_GROUP" ]; then
