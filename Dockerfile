@@ -28,6 +28,8 @@ RUN mkdir -p /usr/share/maven /usr/share/maven/ref \
 ENV MAVEN_HOME /usr/share/maven
 ENV MAVEN_CONFIG "$USER_HOME_DIR/.m2"
 ENV MAVEN_CMD "mvn clean package -DskipTests"
+# allow maven cache reuse
+VOLUME "${MAVEN_CONFIG}"
 
 # install rpmbuild
 RUN apt-get install -y --no-install-recommends rpm
@@ -41,4 +43,5 @@ RUN mkdir -p ${SOURCE_DIR}
 VOLUME "${SOURCE_DIR}"
 
 COPY docker-entrypoint.sh /docker-entrypoint.sh
-CMD [ "/docker-entrypoint.sh" ]
+ENTRYPOINT [ "/docker-entrypoint.sh" ]
+CMD [ "package" ]

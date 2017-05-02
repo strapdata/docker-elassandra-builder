@@ -6,17 +6,28 @@ Available on [docker hub](https://hub.docker.com/r/strapdata/elassandra-builder/
 docker pull strapdata/elassandra-builder
 ```
 
-**Warning**: this works with an internal version of elassandra that is not yet published.
-
 ## Usage
 
 #### One-shot compilation
 First you need the Elassandra source on your host. Then run the container with your elassandra source directory mounted at `/src`:
 ```bash
-docker run -v <path-to-elassandra-source>:/src -it strapdata/elassandra-builder
+docker run -v <path-to-elassandra-source>:/src strapdata/elassandra-builder
 ```
-If this command succeed, you will have a new folder `collect/` within you elassandra source directory, containing the generated tarballs and packages.
+... which run `mvn clean package -skipTests`.
 
+Others commands can be executed, for instance you can do:
+```bash
+docker run -v <path-to-elassandra-source>:/src strapdata/elassandra-builder mvn --version
+```
+
+Additionally, because the project is be built as root user within the container, you may want to fix ownership of generated files. For this purpose you have to set three variables in the environment:
+```bash
+docker run -v <path-to-elassandra-source>:/src \
+           -e FIX_OWNERSHIP=true \
+           -e FIXED_OWNER=$(id -u) \
+           -e FIXED_GROUP=$(id -g) \
+           strapdata/elassandra-builder
+```
 
 #### Interactive mode
 You may also want to spawn a shell in the container an call maven yourself:

@@ -24,23 +24,27 @@ show_and_exec(){
   eval "$@"
 }
 
-
-main() {
+package() {
   show_and_exec cd $SOURCE_DIR
 
   show_and_exec $MAVEN_CMD
 
-  show_and_exec mkdir -p collect
+  if [ "$FIX_OWNERSHIP" = "true" ]; then
 
-  show_and_exec cp distribution/tar/target/releases/*.tar.gz collect/
-  show_and_exec cp distribution/zip/target/releases/*.zip collect/
-  show_and_exec cp distribution/deb/target/releases/*.deb collect/
-
-  # temporary solution for renaming rpm file generated as elasticsearch-${version}.rpm
-  for from in distribution/rpm/target/releases/elasticsearch*.rpm; do
-    to=collect/$(echo $(basename $from) | sed -e 's/elasticsearch/elassandra/')
-    show_and_exec cp $from $to
-  done
+    if [ -n "$FIXED_OWNER" ] && [ -n "$FIXED_GROUP" ]; then
+      show_and_exec find -type d -name 'target' -exec chown -R $FIXED_OWNER:$FIXED_GROUP {} '\;'
+    else
+        echo_color $RED "Missing environmment variables FIXED_OWNER and FIXED_GROUP"
+        exit 1
+    fi
+  fi
 }
 
-main $@
+case $1 in
+  package)
+    package
+    ;;
+  *)
+    show_and_exec "$@"
+    ;;
+esac
