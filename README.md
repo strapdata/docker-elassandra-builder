@@ -11,7 +11,7 @@ docker pull strapdata/elassandra-builder
 #### One-shot compilation
 First you need the Elassandra source on your host. Then run the container with your elassandra source directory mounted at `/src`:
 ```bash
-docker run -v <path-to-elassandra-source>:/src strapdata/elassandra-builder
+docker run -v <path-to-elassandra-source>:/home/builder/src strapdata/elassandra-builder
 ```
 ... which run `mvn clean package -skipTests`.
 
@@ -20,7 +20,7 @@ Others commands can be executed, for instance you can do:
 docker run -v <path-to-elassandra-source>:/src strapdata/elassandra-builder mvn --version
 ```
 
-Additionally, because the project is be built as root user within the container, you may want to fix ownership of generated files. For this purpose you have to set three variables in the environment:
+Additionally, you may want to fix ownership of generated files. For this purpose you have to set three variables in the environment:
 ```bash
 docker run -v <path-to-elassandra-source>:/src \
            -e FIX_OWNERSHIP=true \
