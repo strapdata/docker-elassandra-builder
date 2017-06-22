@@ -39,6 +39,8 @@ ENV MAVEN_HOME /usr/share/maven
 ENV MAVEN_CONFIG "$USER_HOME_DIR/.m2"
 ENV MAVEN_CMD "mvn clean package -DskipTests"
 # allow maven cache reuse
+RUN mkdir -p ${MAVEN_CONFIG}
+RUN chown builder:builder ${MAVEN_CONFIG}
 VOLUME "${MAVEN_CONFIG}"
 
 # install rpmbuild
