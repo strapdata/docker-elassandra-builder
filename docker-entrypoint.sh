@@ -27,7 +27,7 @@ show_and_exec(){
 package() {
   show_and_exec cd $SOURCE_DIR
 
-  show_and_exec $MAVEN_CMD
+  show_and_exec $GRADLE_CMD
 
   if [ "$FIX_OWNERSHIP" = "true" ]; then
 
