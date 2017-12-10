@@ -11,7 +11,8 @@ ENV DEBIAN_FRONTEND noninteractive
 RUN apt-get update
 
 # install commmons utilities
-RUN apt-get install -y --no-install-recommends apt-utils curl tar software-properties-common zip unzip
+RUN apt-get install -y --no-install-recommends apt-utils curl tar software-properties-common zip unzip python2.7 \
+  && ln -s /usr/bin/python2.7 /usr/bin/python2
 
 # install java
 # RUN apt-get install -y --no-install-recommends openjdk-8-jdk
