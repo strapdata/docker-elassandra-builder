@@ -11,7 +11,8 @@ ENV DEBIAN_FRONTEND noninteractive
 RUN apt-get update
 
 # install commmons utilities
-RUN apt-get install -y --no-install-recommends apt-utils curl tar software-properties-common
+RUN apt-get install -y --no-install-recommends apt-utils curl tar software-properties-common zip unzip python2.7 \
+  && ln -s /usr/bin/python2.7 /usr/bin/python2
 
 # install java
 # RUN apt-get install -y --no-install-recommends openjdk-8-jdk
@@ -24,24 +25,26 @@ RUN \
   rm -rf /var/cache/oracle-jdk8-installer
 ENV JAVA_HOME /usr/lib/jvm/java-8-oracle
 
-# install maven
-# see https://github.com/carlossg/docker-maven
-ARG MAVEN_VERSION=3.5.0
-ARG MAVEN_SHA=beb91419245395bd69a4a6edad5ca3ec1a8b64e41457672dc687c173a495f034
-ARG MAVEN_BASE_URL=https://apache.osuosl.org/maven/maven-3/${MAVEN_VERSION}/binaries
-RUN mkdir -p /usr/share/maven /usr/share/maven/ref \
-  && curl -fsSL -o /tmp/apache-maven.tar.gz ${MAVEN_BASE_URL}/apache-maven-$MAVEN_VERSION-bin.tar.gz \
-  && echo "${MAVEN_SHA}  /tmp/apache-maven.tar.gz" | sha256sum -c - \
-  && tar -xzf /tmp/apache-maven.tar.gz -C /usr/share/maven --strip-components=1 \
-  && rm -f /tmp/apache-maven.tar.gz \
-  && ln -s /usr/share/maven/bin/mvn /usr/bin/mvn
-ENV MAVEN_HOME /usr/share/maven
-ENV MAVEN_CONFIG "$USER_HOME_DIR/.m2"
-ENV MAVEN_CMD "mvn clean package -DskipTests"
-# allow maven cache reuse
-RUN mkdir -p ${MAVEN_CONFIG}
-RUN chown builder:builder ${MAVEN_CONFIG}
-VOLUME "${MAVEN_CONFIG}"
+ENV GRADLE_VERSION 3.3
+ENV GRADLE_URL https://services.gradle.org/distributions/gradle-${GRADLE_VERSION}-bin.zip
+#ENV GRADLE_SHA1
+ENV GRADLE_HOME /usr/lib/gradle-${GRADLE_VERSION}
+ENV GRADLE_REF /usr/lib/gradle-ref
+ENV PATH $PATH:${GRADLE_HOME}/bin
+
+ENV GRADLE_CONFIG /root/.gradle
+VOLUME $GRADLE_CONFIG
+
+ENV COPY_REFERENCE_FILE_LOG $GRADLE_CONFIG/copy_reference_file.log
+
+RUN cd /usr/lib && \
+    curl -fsSL $GRADLE_URL -o gradle-bin.zip && \
+    unzip gradle-bin.zip && \
+    ln -s "/usr/lib/gradle-${GRADLE_VERSION}/bin/gradle" /usr/bin/gradle && \
+    rm gradle-bin.zip && \
+    mkdir -p /src $GRADLE_REF
+
+ENV GRADLE_CMD="gradle assemble"
 
 # install rpmbuild
 RUN apt-get install -y --no-install-recommends rpm

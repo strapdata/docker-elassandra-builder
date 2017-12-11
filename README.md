@@ -13,11 +13,15 @@ First you need the Elassandra source on your host. Then run the container with y
 ```bash
 docker run -v <path-to-elassandra-source>:/home/builder/src strapdata/elassandra-builder
 ```
-... which run `mvn clean package -skipTests`.
+... which run `gradle assemble`.
+
 
 Others commands can be executed, for instance you can do:
 ```bash
-docker run -v <path-to-elassandra-source>:/src strapdata/elassandra-builder mvn --version
+
+GRADLE_CMD="gradle assemble distribution:tar:assemble -Dbuild.snapshot=false" \
+docker run --rm -v <path-to-elassandra-source>:/home/builder/src strapdata/elassandra-builder
+
 ```
 
 Additionally, you may want to fix ownership of generated files. For this purpose you have to set three variables in the environment:
@@ -30,11 +34,11 @@ docker run -v <path-to-elassandra-source>:/src \
 ```
 
 #### Interactive mode
-You may also want to spawn a shell in the container an call maven yourself:
+You may also want to spawn a shell in the container an call gradle yourself:
 ```bash
 docker run -v <path-to-elassandra-source>:/src -it strapdata/elassandra-builder bash
 cd /src
-mvn package -DskipTests
+gradle assemble distribution:tar:assemble -Dbuild.snapshot=false
 ...
 ```
 
